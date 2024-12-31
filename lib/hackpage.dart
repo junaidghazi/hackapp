@@ -1,7 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 
 class RegisterScreen extends StatelessWidget {
@@ -9,6 +9,26 @@ class RegisterScreen extends StatelessWidget {
       "https://55wingo.in/#/register?invitationCode=152181600864";
 
   const RegisterScreen({super.key});
+
+  Future<void> _launchURL(BuildContext context) async {
+    try {
+      final Uri url = Uri.parse(registerLink);
+      if (!await launchUrl(
+        url,
+        mode: LaunchMode.externalApplication,
+        webViewConfiguration: const WebViewConfiguration(
+          enableJavaScript: true,
+          enableDomStorage: true,
+        ),
+      )) {
+        throw Exception('Could not launch $registerLink');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error opening link: ${e.toString()}")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +39,7 @@ class RegisterScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 50), // Added padding to move steps down
+            const SizedBox(height: 50),
             const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -52,9 +72,6 @@ class RegisterScreen extends StatelessWidget {
             const StepDescription(
                 step: "4", description: "Click on 'Next' Button"),
             const SizedBox(height: 16),
-            // QR Code for the link
-           
-            const SizedBox(height: 16),
             Text(
               "Register Link: $registerLink",
               textAlign: TextAlign.center,
@@ -62,16 +79,7 @@ class RegisterScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () async {
-                if (await canLaunchUrl(Uri.parse(registerLink))) {
-                  await launchUrl(Uri.parse(registerLink),
-                      mode: LaunchMode.externalApplication);
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Could not open the link")),
-                  );
-                }
-              },
+              onPressed: () => _launchURL(context),
               child: const Text("Register Now"),
             ),
             const SizedBox(height: 8),
