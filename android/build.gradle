@@ -13,6 +13,18 @@ subprojects {
     project.evaluationDependsOn(":app")
 }
 
+// Define the AGP version and Gradle Wrapper compatibility
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        // Update AGP to 8.2.1 or higher
+        classpath 'com.android.tools.build:gradle:8.2.1'
+    }
+}
+
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }

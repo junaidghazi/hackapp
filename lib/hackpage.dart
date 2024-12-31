@@ -1,8 +1,8 @@
-// ignore_for_file: deprecated_member_use, use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:share_plus/share_plus.dart';
 
 class RegisterScreen extends StatelessWidget {
   final String registerLink =
@@ -18,9 +18,8 @@ class RegisterScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            // Steps Header
+            const SizedBox(height: 50), // Added padding to move steps down
             const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -36,14 +35,12 @@ class RegisterScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            // Title Text
             const Text(
               "To Start Hack Register With Game Server\nTap To Next Step",
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.red, fontSize: 18),
             ),
             const SizedBox(height: 24),
-            // Steps Description
             const StepDescription(
                 step: "1", description: "Click on 'Register Now'"),
             const StepDescription(
@@ -55,29 +52,20 @@ class RegisterScreen extends StatelessWidget {
             const StepDescription(
                 step: "4", description: "Click on 'Next' Button"),
             const SizedBox(height: 16),
-            // Display Local QR Code Image from assets
-            Container(
-              width: 150,
-              height: 150,
-              color: Colors.white,
-              child: Image.asset(
-                'assets/ic_launcher_foreground.png',
-                fit: BoxFit.cover,
-              ),
-            ),
+            // QR Code for the link
+           
             const SizedBox(height: 16),
-            // Register Link
             Text(
               "Register Link: $registerLink",
               textAlign: TextAlign.center,
               style: const TextStyle(color: Colors.white, fontSize: 14),
             ),
             const SizedBox(height: 16),
-            // Register Button
             ElevatedButton(
               onPressed: () async {
-                if (await canLaunch(registerLink)) {
-                  await launch(registerLink);
+                if (await canLaunchUrl(Uri.parse(registerLink))) {
+                  await launchUrl(Uri.parse(registerLink),
+                      mode: LaunchMode.externalApplication);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text("Could not open the link")),
@@ -87,13 +75,9 @@ class RegisterScreen extends StatelessWidget {
               child: const Text("Register Now"),
             ),
             const SizedBox(height: 8),
-            // Share Button
             ElevatedButton(
               onPressed: () {
-                Clipboard.setData(ClipboardData(text: registerLink));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Link copied to clipboard!")),
-                );
+                Share.share(registerLink);
               },
               child: const Text("Share Link"),
             ),
